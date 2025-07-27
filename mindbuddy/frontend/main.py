@@ -13,6 +13,7 @@ from chat import chat_interface
 from dashboard import dashboard_interface
 from log_mood import log_mood_interface
 from analytics import analytics_interface
+from quiz_component import QuizComponent  # New import
 from api_client import MindBuddyAPI
 
 # Page configuration with healing theme
@@ -23,7 +24,7 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# Enhanced CSS with dark healing theme
+# Enhanced CSS with dark healing theme (keeping your existing styles and adding quiz-specific ones)
 st.markdown("""
 <style>
     /* Import beautiful fonts */
@@ -129,6 +130,142 @@ st.markdown("""
         background: rgba(255, 107, 107, 1);
         transform: translateY(-2px);
         box-shadow: 0 6px 20px rgba(255, 107, 107, 0.4);
+    }
+    
+    /* Quiz-specific styling that matches your theme */
+    .quiz-container {
+        background: linear-gradient(135deg, rgba(102, 126, 234, 0.15), rgba(118, 75, 162, 0.15));
+        backdrop-filter: blur(25px);
+        border-radius: 30px;
+        padding: 3rem 2rem;
+        margin: 2rem 0;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .quiz-container::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: linear-gradient(90deg, #667eea, #764ba2, #38ef7d);
+        opacity: 0.8;
+    }
+    
+    .quiz-title {
+        font-family: 'Poppins', sans-serif;
+        color: #ffffff;
+        text-align: center;
+        font-size: 2.8rem;
+        font-weight: 700;
+        background: linear-gradient(45deg, #667eea, #764ba2, #38ef7d);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 1rem;
+        text-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    }
+    
+    .quiz-subtitle {
+        font-family: 'Inter', sans-serif;
+        color: #b8b8b8;
+        text-align: center;
+        font-size: 1.3rem;
+        font-weight: 300;
+        margin-bottom: 2rem;
+    }
+    
+    .question-card {
+        background: rgba(255, 255, 255, 0.08);
+        backdrop-filter: blur(15px);
+        border-radius: 20px;
+        padding: 2rem;
+        margin: 1.5rem 0;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .question-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 12px 40px rgba(102, 126, 234, 0.2);
+    }
+    
+    .question-card h4 {
+        font-family: 'Nunito', sans-serif;
+        color: #ffffff;
+        font-size: 1.3rem;
+        font-weight: 600;
+        margin-bottom: 1.5rem;
+        line-height: 1.4;
+    }
+    
+    .insight-card {
+        background: linear-gradient(135deg, rgba(17, 153, 142, 0.15), rgba(56, 239, 125, 0.15));
+        backdrop-filter: blur(25px);
+        border-radius: 25px;
+        padding: 2.5rem;
+        margin: 2rem 0;
+        box-shadow: 0 15px 50px rgba(0, 0, 0, 0.3);
+        border: 1px solid rgba(56, 239, 125, 0.2);
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .insight-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: linear-gradient(90deg, #11998e, #38ef7d);
+        opacity: 0.9;
+    }
+    
+    .insight-card p {
+        color: #ffffff;
+        font-family: 'Inter', sans-serif;
+        line-height: 1.7;
+        font-size: 1.1rem;
+    }
+    
+    .insight-card h2, .insight-card h3, .insight-card h4 {
+        color: #ffffff;
+        font-family: 'Poppins', sans-serif;
+    }
+    
+    .insight-card ul {
+        color: #ffffff;
+    }
+    
+    .insight-card li {
+        margin-bottom: 0.8rem;
+        color: #ffffff;
+    }
+    
+    /* Quiz feedback buttons */
+    .quiz-feedback-container {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        margin: 2rem 0;
+        padding: 1.5rem;
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 20px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .quiz-feedback-text {
+        text-align: center;
+        color: #b8b8b8;
+        font-style: italic;
+        font-family: 'Inter', sans-serif;
+        margin-bottom: 1rem;
+        font-size: 1.1rem;
     }
     
     /* Healing color palette */
@@ -380,6 +517,116 @@ def handle_logout():
             del st.session_state[key]
         st.rerun()
 
+def quiz_interface(user_token):
+    """Quiz interface integrated with MindBuddy theme"""
+    # Initialize quiz component
+    quiz_component = QuizComponent(api_base_url="http://localhost:8000/api/quiz")
+    
+    # Check if we need quiz sub-navigation
+    if 'quiz_page' not in st.session_state:
+        st.session_state.quiz_page = "take_quiz"
+    
+    # Quiz sub-navigation
+    col1, col2, col3 = st.columns([1, 1, 1])
+    
+    with col1:
+        if st.button("📝 Take Quiz", use_container_width=True, 
+                    type="primary" if st.session_state.quiz_page == "take_quiz" else "secondary"):
+            st.session_state.quiz_page = "take_quiz"
+            st.rerun()
+    
+    with col2:
+        if st.button("📚 Quiz History", use_container_width=True,
+                    type="primary" if st.session_state.quiz_page == "history" else "secondary"):
+            st.session_state.quiz_page = "history"
+            st.rerun()
+    
+    with col3:
+        if st.button("📊 Progress", use_container_width=True,
+                    type="primary" if st.session_state.quiz_page == "progress" else "secondary"):
+            st.session_state.quiz_page = "progress"
+            st.rerun()
+    
+    st.markdown("---")
+    
+    # Render appropriate page
+    if st.session_state.quiz_page == "take_quiz":
+        quiz_component.render_quiz_interface()
+    elif st.session_state.quiz_page == "history":
+        quiz_component.render_quiz_history() 
+    elif st.session_state.quiz_page == "progress":
+        render_quiz_progress(quiz_component)
+
+def render_quiz_progress(quiz_component):
+    """Render quiz progress analytics"""
+    st.markdown("""
+    <div class="quiz-container">
+        <h2 class="quiz-title">📈 Your Wellness Progress</h2>
+        <p class="quiz-subtitle">Track your mental wellness journey over time</p>
+    </div>
+    """, unsafe_allow_html=True)
+    
+    try:
+        # Get quiz history for progress tracking
+        import requests
+        response = requests.get(f"{quiz_component.api_base_url}/history/")
+        
+        if response.status_code == 200:
+            history = response.json()
+            
+            if history:
+                # Group by topic
+                topics = {}
+                for entry in history:
+                    topic = entry['topic_name']
+                    if topic not in topics:
+                        topics[topic] = []
+                    topics[topic].append(entry)
+                
+                # Display progress for each topic
+                for topic, entries in topics.items():
+                    with st.expander(f"📊 {topic} Progress ({len(entries)} sessions)", expanded=True):
+                        if len(entries) > 1:
+                            st.success(f"Great consistency! You've completed {len(entries)} sessions in this topic.")
+                            
+                            # Show trend
+                            dates = [entry['date'][:10] for entry in entries]
+                            st.write("**Session Timeline:**")
+                            for i, date in enumerate(reversed(dates)):
+                                st.write(f"Session {len(dates)-i}: {date}")
+                        else:
+                            st.info("Complete more sessions to see your progress trends!")
+                
+                # Overall stats
+                st.markdown("### 🌟 Overall Statistics")
+                col1, col2, col3 = st.columns(3)
+                
+                with col1:
+                    st.metric("Total Sessions", len(history))
+                
+                with col2:
+                    st.metric("Topics Explored", len(topics))
+                
+                with col3:
+                    # Calculate consistency (sessions per week)
+                    if history:
+                        from datetime import datetime
+                        dates = [datetime.strptime(entry['date'][:10], '%Y-%m-%d') for entry in history]
+                        if len(dates) > 1:
+                            days_range = (max(dates) - min(dates)).days
+                            consistency = len(history) / max(1, days_range/7)
+                            st.metric("Sessions/Week", f"{consistency:.1f}")
+                        else:
+                            st.metric("Sessions/Week", "1.0")
+            else:
+                st.info("🌱 Start taking quizzes to see your progress here!")
+                
+        else:
+            st.error("Unable to load progress data")
+            
+    except Exception as e:
+        st.error(f"Error loading progress: {e}")
+
 def main():
     """Main application entry point"""
     # Initialize session state
@@ -401,8 +648,14 @@ def main():
     st.markdown('<h1 class="big-title">🌸 MindBuddy</h1>', unsafe_allow_html=True)
     st.markdown(f'<p class="subtitle">Welcome back, {st.session_state.username}! ✨</p>', unsafe_allow_html=True)
     
-    # Navigation - Chat moved to first position
-    tab1, tab2, tab3, tab4 = st.tabs(["💬 Chat with Buddy", "🏠 Dashboard", "📝 Log Mood", "📊 Analytics"])
+    # Navigation - Added Wellness Quiz tab
+    tab1, tab2, tab3, tab4, tab5 = st.tabs([
+        "💬 Chat with Buddy", 
+        "🏠 Dashboard", 
+        "📝 Log Mood", 
+        "📊 Analytics",
+        "🧠 Wellness Quiz"  # New tab
+    ])
     
     # Get user token for API calls
     user_token = st.session_state.user_token if not st.session_state.is_demo else None
@@ -418,6 +671,9 @@ def main():
     
     with tab4:
         analytics_interface(user_token)
+    
+    with tab5:
+        quiz_interface(user_token)  # New tab content
 
     # Enhanced footer
     st.markdown("---")
@@ -425,7 +681,7 @@ def main():
         """
         <div style='text-align: center; color: #b8b8b8; font-size: 0.9rem; font-family: Inter;'>
             <p>Made with 💖 for your mental wellness journey</p>
-            <p>🌸 MindBuddy v2.0 - Enhanced Edition ✨</p>
+            <p>🌸 MindBuddy v2.1 - Enhanced Edition with Wellness Quizzes ✨</p>
         </div>
         """, 
         unsafe_allow_html=True

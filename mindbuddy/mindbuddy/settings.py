@@ -51,6 +51,7 @@ INSTALLED_APPS = [
     'conversation',
     'Mood_Tracking', 
     'authentication',
+    'quiz',
 ]
 
 AUTH_USER_MODEL = 'authentication.User'

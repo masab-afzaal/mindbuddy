@@ -22,6 +22,7 @@ urlpatterns = [
     path('api/', include('conversation.urls')),
     path('api/mood/', include('Mood_Tracking.urls')),
     path('api/auth/', include('authentication.urls')),
+    path('api/quiz/', include('quiz.urls')),
 
 
 
