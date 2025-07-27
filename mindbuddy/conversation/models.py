@@ -1,12 +1,12 @@
 from django.db import models
-from django.contrib.auth.models import User
+from django.conf import settings  # This will reference your custom User model
 from django.utils import timezone
 import uuid
 
 class Conversation(models.Model):
     """Model to store conversation sessions"""
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='conversations')
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='conversations')
     title = models.CharField(max_length=200, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -16,7 +16,7 @@ class Conversation(models.Model):
         ordering = ['-updated_at']
     
     def __str__(self):
-        return f"Conversation {self.id} - {self.user.username}"
+        return f"Conversation {self.id} - {self.user.name}"  # Changed from username to name
 
 class Message(models.Model):
     """Model to store individual messages in conversations"""
@@ -55,4 +55,3 @@ class ConversationMemory(models.Model):
     
     def __str__(self):
         return f"Memory for {self.conversation.id}"
-

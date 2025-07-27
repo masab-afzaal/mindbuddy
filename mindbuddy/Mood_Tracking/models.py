@@ -1,5 +1,5 @@
 from django.db import models
-from django.contrib.auth.models import User
+from django.conf import settings  # This will reference your custom User model
 from django.utils import timezone
 from django.core.validators import MinValueValidator, MaxValueValidator
 import uuid
@@ -32,7 +32,7 @@ class MoodEntry(models.Model):
     ]
     
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='mood_entries')
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='mood_entries')
     date = models.DateField(default=date.today)
     
     # Main mood rating (1-5 scale)
@@ -66,11 +66,11 @@ class MoodEntry(models.Model):
         ordering = ['-date']
     
     def __str__(self):
-        return f"{self.user.username} - {self.date} - {self.get_mood_rating_display()}"
+        return f"{self.user.name} - {self.date} - {self.get_mood_rating_display()}"  # Changed from username to name
 
 class MoodStreak(models.Model):
     """Model to track mood logging streaks"""
-    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='mood_streak')
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='mood_streak')
     current_streak = models.IntegerField(default=0)
     longest_streak = models.IntegerField(default=0)
     last_check_in = models.DateField(null=True, blank=True)
@@ -79,7 +79,7 @@ class MoodStreak(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     
     def __str__(self):
-        return f"{self.user.username} - Current: {self.current_streak}, Best: {self.longest_streak}"
+        return f"{self.user.name} - Current: {self.current_streak}, Best: {self.longest_streak}"  # Changed from username to name
 
 class MoodInsight(models.Model):
     """Model to store mood insights and patterns"""
@@ -91,7 +91,7 @@ class MoodInsight(models.Model):
     ]
     
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='mood_insights')
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='mood_insights')
     insight_type = models.CharField(max_length=20, choices=INSIGHT_TYPES)
     title = models.CharField(max_length=200)
     description = models.TextField()
@@ -103,4 +103,4 @@ class MoodInsight(models.Model):
         ordering = ['-date_generated']
     
     def __str__(self):
-        return f"{self.user.username} - {self.title}"
+        return f"{self.user.name} - {self.title}" 
