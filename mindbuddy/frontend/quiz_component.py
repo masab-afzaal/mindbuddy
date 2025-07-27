@@ -113,40 +113,68 @@ class QuizComponent:
         
         # Custom CSS for styling
         st.markdown("""
-        <style>
-        .quiz-container {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            padding: 2rem;
-            border-radius: 15px;
-            margin-bottom: 2rem;
-        }
-        .quiz-title {
-            color: white;
-            text-align: center;
-            font-size: 2.5rem;
-            margin-bottom: 1rem;
-        }
-        .quiz-subtitle {
-            color: #f0f0f0;
-            text-align: center;
-            font-size: 1.2rem;
-            margin-bottom: 2rem;
-        }
-        .question-card {
-            background: white;
-            padding: 1.5rem;
-            border-radius: 10px;
-            margin-bottom: 1rem;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-        .insight-card {
-            background: #f8f9fa;
-            border-left: 4px solid #667eea;
-            padding: 1.5rem;
-            border-radius: 5px;
-            margin: 1rem 0;
-        }
-        </style>
+     <style>
+  /* Container */
+  .quiz-container {
+    background-color: #ffffff;
+    padding: 3rem;
+    border-radius: 16px;
+    margin-bottom: 2.5rem;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
+    border: 1px solid #e5e7eb;
+  }
+
+  /* Title */
+  .quiz-title {
+    color: #1f2937; /* dark gray */
+    text-align: center;
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    letter-spacing: 0.3px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+
+  /* Subtitle */
+  .quiz-subtitle {
+    color: #4b5563; /* medium gray */
+    text-align: center;
+    font-size: 1.2rem;
+    font-weight: 400;
+    margin-bottom: 2rem;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+
+  /* Question Card */
+  .question-card {
+    background-color: #f9fafb;
+    text-color: #1f2937; /* dark gray */
+    padding: 1.75rem;
+    border-radius: 12px;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+    border: 1px solid #e5e7eb;
+    transition: box-shadow 0.2s ease;
+  }
+
+  .question-card:hover {
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.05);
+  }
+
+  /* Insight Card */
+  .insight-card {
+    background-color: #f3f4f6;
+    border-left: 4px solid #3b82f6; /* Blue-500 */
+    padding: 1.5rem;
+    border-radius: 8px;
+    margin: 1.5rem 0;
+    font-size: 1rem;
+    color: #374151; /* gray-700 */
+    font-color: #1f2937; /* dark gray */
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    line-height: 1.6;
+  }
+</style>
         """, unsafe_allow_html=True)
         
         # Header

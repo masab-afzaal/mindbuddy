@@ -18,7 +18,7 @@ def chat_interface(user_token):
         _load_chat_history(user_token)
     
     # Chat interface
-    st.markdown('<div class="chat-interface">', unsafe_allow_html=True)
+    st.markdown('<div class="chat-container">', unsafe_allow_html=True)
     
     # Messages area
     _display_chat_messages()
@@ -47,62 +47,65 @@ def _load_chat_history(user_token):
 def _display_chat_messages():
     """Display all chat messages"""
     st.markdown('<div class="chat-messages">', unsafe_allow_html=True)
+    
     for message in st.session_state.chat_messages:
         _display_message(message)
+    
     st.markdown('</div>', unsafe_allow_html=True)
 
 def _display_message(message):
     """Display a single chat message"""
+    timestamp = message.get("timestamp", "")
+    
     if message["role"] == "user":
         st.markdown(f'''
-        <div class="message-bubble user-bubble">
-            {message["content"]}
-            <div style="font-size: 0.75rem; opacity: 0.7; text-align: right; margin-top: 0.5rem;">
-                {message.get("timestamp", "")}
+        <div style="display: flex; justify-content: flex-end; margin: 0.8rem 0;">
+            <div class="message-bubble user-bubble">
+                <div>{message["content"]}</div>
+                <div style="font-size: 0.75rem; opacity: 0.8; text-align: right; margin-top: 0.3rem;">
+                    {timestamp}
+                </div>
             </div>
         </div>
         ''', unsafe_allow_html=True)
     else:
         st.markdown(f'''
-        <div class="message-bubble assistant-bubble">
-            {message["content"]}
-            <div style="font-size: 0.75rem; opacity: 0.7; margin-top: 0.5rem;">
-                {message.get("timestamp", "")}
+        <div style="display: flex; justify-content: flex-start; margin: 0.8rem 0;">
+            <div class="message-bubble assistant-bubble">
+                <div>{message["content"]}</div>
+                <div style="font-size: 0.75rem; opacity: 0.6; margin-top: 0.3rem;">
+                    MindBuddy • {timestamp}
+                </div>
             </div>
         </div>
         ''', unsafe_allow_html=True)
 
 def _chat_input_form(user_token):
-    """Chat input form with send and voice buttons"""
+    """Chat input form with send button"""
+    st.markdown('<div class="chat-input-area">', unsafe_allow_html=True)
+    
     with st.form("chat_form", clear_on_submit=True):
-        st.markdown('<div class="chat-input-container">', unsafe_allow_html=True)
-        
-        col1, col2, col3 = st.columns([0.8, 6, 0.8])
+        col1, col2 = st.columns([5, 1])
         
         with col1:
-            voice_btn = st.form_submit_button("🎤", help="Record voice message")
-        
-        with col2:
             user_input = st.text_area(
                 "",
                 placeholder="Share what's on your mind... 💭",
-                height=60,
+                height=80,
                 key="chat_input",
                 label_visibility="collapsed"
             )
         
-        with col3:
-            send_btn = st.form_submit_button("🚀", help="Send message")
-        
-        st.markdown('</div>', unsafe_allow_html=True)
-        
-        if voice_btn:
-            st.info("🎙️ Voice recording feature coming soon! For now, please use text input.")
+        with col2:
+            st.markdown("<br>", unsafe_allow_html=True)  # Add some spacing
+            send_btn = st.form_submit_button("Send 🚀", use_container_width=True)
         
         if send_btn and user_input.strip():
             _handle_message_send(user_input.strip(), user_token)
         elif send_btn and not user_input.strip():
             st.warning("Please enter a message before sending! 💌")
+    
+    st.markdown('</div>', unsafe_allow_html=True)
 
 def _handle_message_send(user_input, user_token):
     """Handle sending a message and getting AI response"""
